@@ -8,14 +8,14 @@ logger = logging.getLogger(__name__)
 class Extract:
     
     @staticmethod
-    def extract(game, data_date):
-        data_dir = os.path.join('data', game, date_to_dir(data_date))
+    def extract(game, extract_date):
+        data_dir = os.path.join('data', game, date_to_dir(extract_date))
         try:
             files = os.listdir(data_dir)
             if len(files) == 0:
                 raise FileNotFoundError
         except FileNotFoundError:
-            logger.error('No data for date: {0}'.format(data_date))
+            logger.error('No data for date: {0}'.format(extract_date))
             exit(1)
 
         # assume one file per directory
@@ -28,13 +28,6 @@ class Extract:
         elif filename.endswith('.json'):
             data = read_json(filepath, limit=0)
         return data
-
-    @staticmethod
-    def validate():
-        fields = ['id', 'first_name', 'last_name', 'email', 'gender', 'ip_address', 'dob']
-        #print(self.data[0].keys())
-        #if dob_format not in ['%Y-%m-%d', '%Y-%m-%d %H:%M:%S']:
-        #    raise ValueError
 
 
 def read_csv(filename, limit=0):
@@ -58,7 +51,13 @@ def read_json(filename, limit=0):
             if limit > 0 and cnt >= limit:
                 break
 
-def date_to_dir(data_date):
-    return os.path.join('{0}'.format(data_date.year),
-                        '{:02}'.format(data_date.month),
-                        '{:02}'.format(data_date.day))
+def date_to_dir(extract_date):
+    return os.path.join('{0}'.format(extract_date.year),
+                        '{:02}'.format(extract_date.month),
+                        '{:02}'.format(extract_date.day))
+
+def validate():
+    #TODO validate extracted data
+    required_fields = ['id', 'first_name', 'last_name', 'email', 'gender', 'ip_address', 'dob']
+    #print(self.data[0].keys())
+    #dob_format not in ['%Y-%m-%d', '%Y-%m-%d %H:%M:%S']:

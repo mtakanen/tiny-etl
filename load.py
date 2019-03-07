@@ -11,18 +11,17 @@ class Load():
 
     @staticmethod
     def load(data, game):
-        logger.info('Load data to db')
-
+        logger.info('Load data to {0}'.format(DB_FILENAME))
         table_name = '{0}{1}'.format(game, TABLE_SUFFIX)
-        conn = connect_to_db(DB_FILENAME)
-        create_table(conn, table_name)
-        c = conn.cursor()
-        sql = '''INSERT OR REPLACE INTO {0} 
-                 VALUES (:accountid, :gender, :age, 
-                 :country, :data_date, :load_date)'''.format(table_name)
-        c.executemany(sql, data)
-        conn.commit()
-        conn.close()
+
+        with connect_to_db(DB_FILENAME) as conn: 
+            create_table(conn, table_name)
+            c = conn.cursor()
+            sql = '''INSERT OR REPLACE INTO {0} 
+                    VALUES (:accountid, :gender, :age, 
+                    :country, :extract_date, :load_date)'''.format(table_name)
+            c.executemany(sql, data)
+            conn.commit()
 
 
 def create_table(conn, table_name):
@@ -31,7 +30,7 @@ def create_table(conn, table_name):
                gender varchar(6),
                age int,
                country varchar(255),
-               data_date date not null,
+               extract_date date not null,
                load_date date not null
             )'''.format(table_name)
     conn.execute(sql)
@@ -46,6 +45,4 @@ def connect_to_db(db_filename):
         conn = sqlite3.connect(db_filename)
         return conn
     except sqlite3.Error as err:
-        logger.error('Connect to db {0} failed: {1}'.format(DB_FILENAME, err))
-
-    return None
+        logger.error('Connection to db {0} failed: {1}'.format(DB_FILENAME, err))
