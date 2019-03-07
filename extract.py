@@ -8,13 +8,6 @@ logger = logging.getLogger(__name__)
 class Extract:
     
     @staticmethod
-    def extract(game, data_date):
-        data = list(Extract.read_data(game, data_date))
-        # TODO: validate data
-        #self.validate()
-        return data
-
-    @staticmethod
     def validate():
         fields = ['id', 'first_name', 'last_name', 'email', 'gender', 'ip_address', 'dob']
         #print(self.data[0].keys())
@@ -22,7 +15,7 @@ class Extract:
         #    raise ValueError
 
     @staticmethod
-    def read_data(game, data_date):
+    def extract(game, data_date):
         data_dir = os.path.join('data', game, Extract.date_to_dir(data_date))
         try:
             files = os.listdir(data_dir)
@@ -34,8 +27,8 @@ class Extract:
 
         # assume one file per directory
         filename = files[0]
-
         filepath = os.path.join(data_dir, filename)
+
         logger.info('Read from {0}'.format(filepath))
         if filename.endswith('.csv'):
             data = Extract.read_csv(filepath, limit=0)
