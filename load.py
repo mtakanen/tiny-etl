@@ -3,10 +3,10 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-db_file = 'game_etl.db'
-table_name = 'users'
+DB_FILENAME = 'db/game_etl.db'
+TABLE_NAME = 'users'
 
-conn = sqlite3.connect(db_file)
+conn = sqlite3.connect(DB_FILENAME)
 
 
 class Load():
@@ -18,7 +18,7 @@ class Load():
         c = conn.cursor()
         sql = '''INSERT INTO {0} 
                  VALUES (:game, :id, :gender, :age, 
-                 :country, :data_date, :load_date)'''.format(table_name)
+                 :country, :data_date, :load_date)'''.format(TABLE_NAME)
         c.executemany(sql, data)
         conn.commit()
         conn.close()
@@ -29,7 +29,7 @@ class Load():
         c = conn.cursor()
         sql = '''DELETE FROM {0}
                  WHERE data_date = ?
-                 AND game = ?'''.format(table_name)
+                 AND game = ?'''.format(TABLE_NAME)
         c.execute(sql, (data_date, game))       
 
     @staticmethod
@@ -42,5 +42,5 @@ class Load():
                     country varchar(255),
                     data_date date not null,
                     load_date date not null
-                    )'''.format(table_name)
+                    )'''.format(TABLE_NAME)
         conn.execute(sql)

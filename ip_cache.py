@@ -3,15 +3,15 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-DB_FILE = 'res/ip_cache.db'
-TABLE = 'ip_country'
+DB_FILENAME = 'db/ip_cache.db'
+TABLE_NAME = 'ip_country'
 
 class IPCountryCache:
     '''Memory cache for IP address to country_name mapping.
     Supports persistence to db'''
     def __init__(self):
         self.cache = dict()
-        self.conn = sqlite3.connect(DB_FILE)
+        self.conn = sqlite3.connect(DB_FILENAME)
         self.create_table()
         self.load()
 
@@ -24,7 +24,7 @@ class IPCountryCache:
 
         c = self.conn.cursor()
         sql = '''SELECT country_name FROM {0}
-                 WHERE ip_address = ?'''.format(TABLE)
+                 WHERE ip_address = ?'''.format(TABLE_NAME)
         c.execute(sql, (ip_address,))
         return c.fetchone()
 
@@ -34,22 +34,22 @@ class IPCountryCache:
             return
         logger.info('Persist ip cache to db')
         c = self.conn.cursor()
-        c.execute('DELETE FROM {0};'.format(TABLE))
+        c.execute('DELETE FROM {0};'.format(TABLE_NAME))
         sql = '''INSERT INTO {0} 
-                 VALUES (:ip_address, :country_name)'''.format(TABLE)
+                 VALUES (:ip_address, :country_name)'''.format(TABLE_NAME)
         c.executemany(sql, items)
         self.conn.commit()
         self.conn.close()
 
     def db_greater_than(self, items):
         c = self.conn.cursor()
-        sql = '''SELECT count(*) FROM {0}'''.format(TABLE)
+        sql = '''SELECT count(*) FROM {0}'''.format(TABLE_NAME)
         c.execute(sql)
         return c.fetchone()[0] >= len(items)
 
     def load(self):
         c = self.conn.cursor()
-        sql = '''SELECT * FROM {0}'''.format(TABLE)
+        sql = '''SELECT * FROM {0}'''.format(TABLE_NAME)
         c.execute(sql)
         for row in c.fetchall():
             self.cache[row[0]] = row[1]
@@ -58,6 +58,6 @@ class IPCountryCache:
         sql = '''CREATE TABLE IF NOT EXISTS {0}
                 ( ip_address varchar(15) not null primary key,
                   country_name varchar(255) 
-                )'''.format(TABLE)
+                )'''.format(TABLE_NAME)
         c = self.conn.cursor()
         c.execute(sql)

@@ -4,7 +4,7 @@ import urllib.request
 from datetime import datetime
 import logging
 
-from cache import IPCountryCache
+from ip_cache import IPCountryCache
 
 logger = logging.getLogger(__name__)
 
