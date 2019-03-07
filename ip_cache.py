@@ -6,53 +6,30 @@ logger = logging.getLogger(__name__)
 DB_FILENAME = 'db/ip_cache.db'
 TABLE_NAME = 'ip_country'
 
-class IPCountryCache:
-    '''Memory cache for IP address to country_name mapping.
-    Supports persistence to db'''
+class IPCache:
+    '''Database cache for IP address to country_name mapping.'''
+
     def __init__(self):
-        self.cache = dict()
-        self.conn = sqlite3.connect(DB_FILENAME)
+        self.conn = self.connect_to_db(DB_FILENAME)
         self.create_table()
-        self.load()
 
     def add(self, ip_address, country):
-        self.cache[ip_address] = country
+        c = self.conn.cursor()
+        sql = '''INSERT OR REPLACE INTO {0} 
+                 VALUES (?, ?)'''.format(TABLE_NAME)
+        c.execute(sql, (ip_address,country))
+        self.conn.commit()
 
     def get(self, ip_address):
-        if ip_address in self.cache:
-            return self.cache[ip_address]
-
+        country = None
         c = self.conn.cursor()
         sql = '''SELECT country_name FROM {0}
                  WHERE ip_address = ?'''.format(TABLE_NAME)
         c.execute(sql, (ip_address,))
-        return c.fetchone()
-
-    def persist(self):
-        items = self.cache.items()
-        if self.db_greater_than(items):
-            return
-        logger.info('Persist ip cache to db')
-        c = self.conn.cursor()
-        c.execute('DELETE FROM {0};'.format(TABLE_NAME))
-        sql = '''INSERT INTO {0} 
-                 VALUES (:ip_address, :country_name)'''.format(TABLE_NAME)
-        c.executemany(sql, items)
-        self.conn.commit()
-        self.conn.close()
-
-    def db_greater_than(self, items):
-        c = self.conn.cursor()
-        sql = '''SELECT count(*) FROM {0}'''.format(TABLE_NAME)
-        c.execute(sql)
-        return c.fetchone()[0] >= len(items)
-
-    def load(self):
-        c = self.conn.cursor()
-        sql = '''SELECT * FROM {0}'''.format(TABLE_NAME)
-        c.execute(sql)
-        for row in c.fetchall():
-            self.cache[row[0]] = row[1]
+        result = c.fetchone()
+        if result:
+            country = result[0]        
+        return country
 
     def create_table(self):
         sql = '''CREATE TABLE IF NOT EXISTS {0}
@@ -61,3 +38,16 @@ class IPCountryCache:
                 )'''.format(TABLE_NAME)
         c = self.conn.cursor()
         c.execute(sql)
+
+    def connect_to_db(self, db_filename):
+        """ create a database connection to the SQLite database
+            specified by the db_file
+        :param db_file: database file
+        :return: Connection object or None
+        """
+        try:
+            conn = sqlite3.connect(db_filename)
+            return conn
+        except sqlite3.Error as err:
+            logger.error('Connect to db {0} failed: {1}'.format(db_filename, err))
+        return None

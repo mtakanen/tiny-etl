@@ -1,14 +1,13 @@
-
-import json
 import urllib.request
+import json
 from datetime import datetime
 import logging
 
-from ip_cache import IPCountryCache
+from ip_cache import IPCache
 
 logger = logging.getLogger(__name__)
 
-ip_cache = IPCountryCache()
+ip_cache = IPCache()
 
 class Transform:
 
@@ -16,20 +15,19 @@ class Transform:
     def transform(data, trans_fun, data_date):
         logger.info('Transform data')
         data = map(lambda record: trans_fun(record, data_date), data)
-        ip_cache.persist()
         return data
 
     @staticmethod
     def hb_transform(record, data_date):
-        drop_fields = ['first_name','last_name','email','ip_address','dob']
-
+        record['accountid'] = record['id'] 
         record['country'] = ip_to_country_cache(record['ip_address'])
         record['age'] = dob_to_age(record['dob'], '%m/%d/%Y', data_date)
         record['gender'] = record['gender'].lower()
         # add constant fields
         record['data_date'] = data_date.strftime('%Y-%m-%d')
-        record['load_date'] = datetime.today().strftime('%Y-%m-%d')
+        record['load_date'] = datetime.today() #.strftime('%Y-%m-%d')
         # drop redundant fields
+        drop_fields = ['id','first_name','last_name','email','ip_address', 'dob']
         for key in drop_fields:
             del record[key]
         # TODO: show progress
@@ -37,10 +35,7 @@ class Transform:
 
     @staticmethod
     def wc_transform(record, data_date):
-        drop_fields = ['name', 'location', 'email', 'login', 'registered', 'phone',
-                        'cell', 'picture', 'dob', 'nat']
-
-        record['id'] = record['login']['salt']
+        record['accountid'] = record['login']['salt']
         record['country'] = nat_to_country(record['nat'])
         record['age'] = dob_to_age(record['dob'], '%Y-%m-%d %H:%M:%S', data_date)
         record['gender'] = record['gender'].lower()
@@ -48,6 +43,8 @@ class Transform:
         record['data_date'] = data_date.strftime('%Y-%m-%d')
         record['load_date'] = datetime.today().strftime('%Y-%m-%d')
         # drop redundant fields
+        drop_fields = ['name', 'location', 'email', 'login', 'registered', 
+                       'phone', 'cell', 'picture', 'dob', 'nat']
         for key in drop_fields:
             del record[key]
         return record 
@@ -55,12 +52,8 @@ class Transform:
 def ip_to_country_cache(ip_address):
     country = ip_cache.get(ip_address)
     if country is None:
-        try:
-            country = ip_to_country_service(ip_address)
-            ip_cache.add(ip_address, country)
-        except urllib.error.HTTPError:
-            ip_cache.persist()
-            exit(1)
+        country = ip_to_country_service(ip_address)
+        ip_cache.add(ip_address, country)
 
     return country if country != 'Undefined' else None
 
@@ -69,11 +62,11 @@ def ip_to_country_service(ip_address):
     try:
         with urllib.request.urlopen(api_url) as response:
             return response.read().decode('utf-8')
-    except urllib.error.HTTPError:
-        logger.error('HTTPError requesting {0}'.format(api_url))
+    except urllib.error.HTTPError as err:
+        logger.error('HTTPError requesting {0}:{1}'.format(api_url, err))
         raise
-    except urllib.error.URLError:
-        logger.error('URLError requesting {0}'.format(api_url))
+    except urllib.error.URLError as err:
+        logger.error('URLError requesting {0}:{1}'.format(api_url, err))
         exit(1)
 
 def nat_to_country(nat):
