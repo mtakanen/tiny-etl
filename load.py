@@ -10,11 +10,11 @@ logger = logging.getLogger(__name__)
 class Load():
 
     @staticmethod
-    def load(data, game):
-        logger.info('Load data to {0}'.format(DB_FILENAME))
+    def load(data, game, db=DB_FILENAME):
+        logger.info('Load data to {0}'.format(db))
         table_name = '{0}{1}'.format(game, TABLE_SUFFIX)
 
-        with connect_to_db(DB_FILENAME) as conn: 
+        with connect_to_db(db) as conn: 
             create_table(conn, table_name)
             c = conn.cursor()
             sql = '''INSERT OR REPLACE INTO {0} 
@@ -46,3 +46,4 @@ def connect_to_db(db_filename):
         return conn
     except sqlite3.Error as err:
         logger.error('Connection to db {0} failed: {1}'.format(DB_FILENAME, err))
+        exit(1)
