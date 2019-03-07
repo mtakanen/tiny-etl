@@ -4,7 +4,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 DB_FILENAME = 'db/game_etl.db'
-TABLE_NAME = 'users'
+TABLE_SUFFIX = '_accounts'
 
 conn = sqlite3.connect(DB_FILENAME)
 
@@ -12,35 +12,35 @@ conn = sqlite3.connect(DB_FILENAME)
 class Load():
 
     @staticmethod
-    def load(data):
+    def load(data, game):
         logger.info('Load data to db')
-        #delete_data(self.data_date, self.game)
+        table_name = '{0}{1}'.format(game, TABLE_SUFFIX)
+        Load.create_table(table_name)
         c = conn.cursor()
         sql = '''INSERT INTO {0} 
-                 VALUES (:game, :id, :gender, :age, 
-                 :country, :data_date, :load_date)'''.format(TABLE_NAME)
+                 VALUES (:id, :gender, :age, 
+                 :country, :data_date, :load_date)'''.format(table_name)
         c.executemany(sql, data)
         conn.commit()
         conn.close()
 
     @staticmethod
-    def delete_data(data_date, game):
+    def delete_data(table_name, data_date):
         logger.info('Delete existing data on {0}'.format(data_date))
         c = conn.cursor()
         sql = '''DELETE FROM {0}
                  WHERE data_date = ?
-                 AND game = ?'''.format(TABLE_NAME)
-        c.execute(sql, (data_date, game))       
+                 AND game = ?'''.format(table_name)
+        c.execute(sql, (data_date))       
 
     @staticmethod
-    def create_schema():
+    def create_table(table_name):
         sql = '''CREATE TABLE IF NOT EXISTS {0}
-                    ( game varchar(3) not null,
-                    id varchar(255) not null primary key,
+                (  id varchar(255) not null primary key,
                     gender varchar(6),
                     age int,
                     country varchar(255),
                     data_date date not null,
                     load_date date not null
-                    )'''.format(TABLE_NAME)
+                )'''.format(table_name)
         conn.execute(sql)

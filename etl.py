@@ -21,8 +21,7 @@ def etl(game, data_date):
     elif game == 'wwc':
         trans_fun = Transform.wc_transform
     transform_data = Transform.transform(extract_data, trans_fun, data_date)
-    Load.create_schema()
-    Load.load(transform_data)
+    Load.load(transform_data, game)
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Game ETL')

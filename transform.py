@@ -27,7 +27,6 @@ class Transform:
         record['age'] = dob_to_age(record['dob'], '%m/%d/%Y', data_date)
         record['gender'] = record['gender'].lower()
         # add constant fields
-        record['game'] = 'hb'
         record['data_date'] = data_date.strftime('%Y-%m-%d')
         record['load_date'] = datetime.today().strftime('%Y-%m-%d')
         # drop redundant fields
@@ -46,7 +45,6 @@ class Transform:
         record['age'] = dob_to_age(record['dob'], '%Y-%m-%d %H:%M:%S', data_date)
         record['gender'] = record['gender'].lower()
         # add constant fields
-        record['game'] = 'wwc'
         record['data_date'] = data_date.strftime('%Y-%m-%d')
         record['load_date'] = datetime.today().strftime('%Y-%m-%d')
         # drop redundant fields
