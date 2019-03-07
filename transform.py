@@ -9,6 +9,7 @@ EXTRACT_DATE_FORMAT = '%Y-%m-%d'
 HB_DOB_FORMAT = '%m/%d/%Y'
 WWC_DOB_FORMAT = '%Y-%m-%d %H:%M:%S'
 IPAPI_URL = 'https://ipapi.co/{0}/country_name'
+ISO2_COUNTRY_FILENAME = 'res/iso2country.json'
 
 logger = logging.getLogger(__name__)
 ip_cache = IPCache()
@@ -37,7 +38,7 @@ class Transform:
         return record
 
     @staticmethod
-    def wc_transform(record, extract_date):
+    def wwc_transform(record, extract_date):
         record['accountid'] = record['login']['salt']
         record['country'] = nat_to_country(record['nat'])
         record['age'] = dob_to_age(record['dob'], WWC_DOB_FORMAT, extract_date)
@@ -47,13 +48,13 @@ class Transform:
         record['load_date'] = datetime.today().strftime(EXTRACT_DATE_FORMAT)
         # drop redundant fields
         drop_fields = ['name', 'location', 'email', 'login', 'registered', 
-                       'phone', 'cell', 'picture', 'dob', 'nat']
+                       'phone', 'cell', 'picture', 'dob', 'nat', 'id']
         for key in drop_fields:
             del record[key]
         return record 
 
-def ip_to_country_cache(ip_address):
-    country = ip_cache.get(ip_address)
+def ip_to_country_cache(ip_address, cache=ip_cache):
+    country = cache.get(ip_address)
     if country is None:
         country = ip_to_country_service(ip_address)
         ip_cache.add(ip_address, country)
@@ -72,18 +73,18 @@ def ip_to_country_service(ip_address):
         logger.error('URLError requesting {0}:{1}'.format(service_url, err))
         exit(1)
 
-def nat_to_country(nat):
-    return iso2country[nat]
-
 def dob_to_age(dob, dob_format, extract_date):        
     delta = extract_date - datetime.strptime(dob, dob_format).date()
     return int(delta.days / 365.25)
 
-def load_iso2_country():
+def nat_to_country(nat):
+    return iso2country[nat]
+
+def load_iso2_country(filename):
     iso2country = {} 
-    with open('res/iso2country.json') as fp: 
+    with open(filename) as fp: 
         for item in json.load(fp):
             iso2country[item['Code']] = item['Name']
     return iso2country
 
-iso2country = load_iso2_country()
+iso2country = load_iso2_country(ISO2_COUNTRY_FILENAME)

@@ -20,7 +20,7 @@ def etl(game, extract_date):
     if game == 'hb':
         trans_fun = Transform.hb_transform
     elif game == 'wwc':
-        trans_fun = Transform.wc_transform
+        trans_fun = Transform.wwc_transform
     transform_data = Transform.transform(extract_data, trans_fun, extract_date)
     Load.load(transform_data, game)
 

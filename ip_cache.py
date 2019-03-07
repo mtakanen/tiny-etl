@@ -9,8 +9,8 @@ TABLE_NAME = 'ip_country'
 class IPCache:
     '''Database cache for IP address to country_name mapping.'''
 
-    def __init__(self):
-        self.conn = self.connect_to_db(DB_FILENAME)
+    def __init__(self, db=DB_FILENAME):
+        self.conn = self.connect_to_db(db)
         self.create_table()
 
     def add(self, ip_address, country):
