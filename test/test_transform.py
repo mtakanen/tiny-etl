@@ -13,6 +13,7 @@ TEST_DB = 'test/test_ip.db'
 logging.disable(logging.CRITICAL)
 
 class TestTransform(unittest.TestCase):
+    
     def test_hb_transform(self):
         record = OrderedDict([('id', '1'), ('first_name', 'Maria'), ('last_name', 'Russell'), 
                               ('email', 'mrussell0@soup.io'), ('gender', 'Female'), 
@@ -53,7 +54,7 @@ class TestTransform(unittest.TestCase):
             record['baz'] = record['foo'] + 1
             del record['bar']
             return record
-            
+
         data = [{'foo' : 1, 'bar': 2}, {'foo' : 2, 'bar': 3}]
         expected = [{'foo': 1, 'baz': 2}, {'foo': 2,'baz': 3}]
 
@@ -108,6 +109,9 @@ class TestTransformUtils(unittest.TestCase):
         country = transform.ip_to_country_service('188.238.114.229')
         assert country == 'Finland'
 
+    def test_date_to_str(self):
+        date_str = transform.date_to_srt(datetime.strptime('2019-03-06', '%Y-%m-%d').date())
+        assert date_str == '2019-03-06'
 
 class TestTransformIPToCountry(unittest.TestCase):
     @classmethod
