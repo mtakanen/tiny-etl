@@ -1,6 +1,7 @@
 import argparse
 from datetime import datetime
 import logging
+import os
 
 from extract import Extract
 import transform
@@ -9,6 +10,8 @@ from load import Load
 
 logger = logging.getLogger(__name__)
 
+SUPPORTED_GAMES=['hb', 'wwc']
+DATA_DIR='data'
 
 def main():
     game, extract_date = parse_args()
@@ -18,7 +21,8 @@ def etl(game, extract_date):
     logger.info('Start ETL for game {0}'.format(game))
     load_date = datetime.today()
 
-    extract_data = Extract.extract(game, extract_date)
+    data_dir = os.path.join(DATA_DIR, game)
+    extract_data = Extract.extract(data_dir, extract_date)
     if game == 'hb':
         trans_fun = Transform.hb_transform
     elif game == 'wwc':
@@ -33,8 +37,8 @@ def parse_args():
     args = parser.parse_args()
 
     game = args.game
-    if game not in ['hb', 'wwc']:
-        logger.error('ETL for {0} not supported. Try hb or wwc'.format(game))
+    if game not in SUPPORTED_GAMES:
+        logger.error('ETL for {0} is not supported. Try one of {1}'.format(game, SUPPORTED_GAMES))
         exit(1)
     try:
         extract_date = datetime.strptime(args.date, transform.EXTRACT_DATE_FORMAT).date()

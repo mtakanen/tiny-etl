@@ -8,9 +8,8 @@ logger = logging.getLogger(__name__)
 class Extract:
     
     @staticmethod
-    def extract(game, extract_date, data_dir='data'):
-        data_dir = os.path.join(data_dir, game, date_to_dir(extract_date))
-        print(data_dir)
+    def extract(data_dir, extract_date):
+        data_dir = os.path.join(data_dir, date_to_dir(extract_date))
         try:
             files = os.listdir(data_dir)
             if len(files) == 0:
@@ -50,7 +49,14 @@ def read_csv(filename, limit=0):
                 break
 
 def read_json(filename, limit=0):
-    '''Reads lines of json objects from `filename`. Assumes that file exists'''
+    '''Reads lines of json objects from file. Assumes that file exists
+
+    Args:
+        filename
+        limit 
+    Returns: 
+        generator of OrderedDict
+    '''
 
     with open(filename) as fp:
         cnt = 1
