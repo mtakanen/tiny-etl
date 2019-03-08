@@ -6,7 +6,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 class Extract:
-    
+    '''Extracts data from local files. Supported data formats are csv and (lines of) json.
+    Data is available to the user via a generator object.
+    '''
     @staticmethod
     def extract(data_dir, extract_date):
         data_dir = os.path.join(data_dir, date_to_dir(extract_date))

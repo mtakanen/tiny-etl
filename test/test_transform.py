@@ -18,7 +18,7 @@ class TestTransform(unittest.TestCase):
         record = OrderedDict([('id', '1'), ('first_name', 'Maria'), ('last_name', 'Russell'), 
                               ('email', 'mrussell0@soup.io'), ('gender', 'Female'), 
                               ('ip_address', '141.48.134.32'), ('dob', '5/26/1976')])
-        expected = OrderedDict([('gender', 'female'), ('accountid', '1'), ('country', 'Germany'), 
+        expected = OrderedDict([('gender', 'female'), ('accountid', 'mrussell0@soup.io'), ('country', 'Germany'), 
                                 ('age', 42), ('extract_date', '2019-03-01'), ('load_date', '2019-03-07')])
 
         extract_date = datetime.strptime('2019-03-01', transform.EXTRACT_DATE_FORMAT).date()
@@ -41,7 +41,7 @@ class TestTransform(unittest.TestCase):
                   'medium': 'https://randomuser.me/api/portraits/med/women/66.jpg', 
                   'thumbnail': 'https://randomuser.me/api/portraits/thumb/women/66.jpg'}, 
                   'nat': 'FR'}
-        expected = {'gender': 'female', 'accountid': '0839048a03692bab539e9768da8b6294', 'country': 'France', 'age': 73, 
+        expected = {'gender': 'female', 'accountid': 'blackdog395', 'country': 'France', 'age': 73, 
                     'extract_date': '2019-03-01', 'load_date': '2019-03-07'}
 
         extract_date = datetime.strptime('2019-03-01', transform.EXTRACT_DATE_FORMAT).date()

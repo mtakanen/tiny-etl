@@ -8,7 +8,10 @@ TABLE_SUFFIX = '_accounts'
 logger = logging.getLogger(__name__)
 
 class Load():
-
+    '''Loads data to datawarehouse. Stores hb and wwc account data into separate tables.
+    If colliding accountid is deteceted old record is replaced, i.e. dw doesn't support 
+    historical versioning of data.
+    '''
     @staticmethod
     def load(data, game, db=DB_FILENAME):
         logger.info('Load data to {0}'.format(db))

@@ -18,7 +18,9 @@ logger = logging.getLogger(__name__)
 ip_cache = IPCache()
 
 class Transform:
-
+    '''Transforms data sources. Supports transformations for user account data 
+    from sources hb and wwc. Adds fields exctract_date and load_date. 
+    '''
     @staticmethod
     def transform(data, trans_fun, extract_date, load_date):
         logger.info('Transform data')
@@ -26,8 +28,10 @@ class Transform:
 
     @staticmethod
     def hb_transform(record, extract_date, load_date):
-        # assumes uniqueness of id across date batches
-        record['accountid'] = record['id']
+        '''Transforms account data from hb. Drops all non-analytical fields 
+           except email that can be used as unique key.
+        '''
+        record['accountid'] = record['email']
         record['country'] = ip_to_country_cache(record['ip_address'])
         record['age'] = dob_to_age(record['dob'], HB_DOB_FORMAT, extract_date)
         record['gender'] = record['gender'].lower()
@@ -37,8 +41,10 @@ class Transform:
 
     @staticmethod
     def wwc_transform(record, extract_date, load_date):
-        # assumes uniqueness of password md5 accross date batchess
-        record['accountid'] = record['login']['md5'] 
+        '''Transforms account data from hb. Drops all non-analytical fields 
+           except username that can be used as unique key.
+        '''
+        record['accountid'] = record['login']['username'] 
         record['country'] = nat_to_country(record['nat']) 
         record['age'] = dob_to_age(record['dob'], WWC_DOB_FORMAT, extract_date)
         record['gender'] = record['gender'].lower()
@@ -47,7 +53,6 @@ class Transform:
         return record 
 
 def add_date_fields(record, extract_date, load_date):
-    # add exctract date and load date to keep track of data and code changes
     record['extract_date'] = date_to_srt(extract_date)
     record['load_date'] = date_to_srt(load_date)
 
