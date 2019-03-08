@@ -37,9 +37,8 @@ class Transform:
 
     @staticmethod
     def wwc_transform(record, extract_date, load_date):
-        # assumes uniqueness of password salt accross date batchess
-        # md5 would be more safe
-        record['accountid'] = record['login']['salt'] 
+        # assumes uniqueness of password md5 accross date batchess
+        record['accountid'] = record['login']['md5'] 
         record['country'] = nat_to_country(record['nat']) 
         record['age'] = dob_to_age(record['dob'], WWC_DOB_FORMAT, extract_date)
         record['gender'] = record['gender'].lower()
