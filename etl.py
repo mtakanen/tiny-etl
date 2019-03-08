@@ -3,7 +3,8 @@ from datetime import datetime
 import logging
 
 from extract import Extract
-from transform import Transform, EXTRACT_DATE_FORMAT
+import transform
+from transform import Transform
 from load import Load
 
 logger = logging.getLogger(__name__)
@@ -15,13 +16,14 @@ def main():
 
 def etl(game, extract_date):
     logger.info('Start ETL for game {0}'.format(game))
+    load_date = datetime.today()
 
     extract_data = Extract.extract(game, extract_date)
     if game == 'hb':
         trans_fun = Transform.hb_transform
     elif game == 'wwc':
         trans_fun = Transform.wwc_transform
-    transform_data = Transform.transform(extract_data, trans_fun, extract_date)
+    transform_data = Transform.transform(extract_data, trans_fun, extract_date, load_date)
     Load.load(transform_data, game)
 
 def parse_args():
@@ -32,10 +34,10 @@ def parse_args():
 
     game = args.game
     if game not in ['hb', 'wwc']:
-        logger.error('No etl for {0}'.format(game))
+        logger.error('ETL for {0} not supported. Try hb or wwc'.format(game))
         exit(1)
     try:
-        extract_date = datetime.strptime(args.date, EXTRACT_DATE_FORMAT).date()
+        extract_date = datetime.strptime(args.date, transform.EXTRACT_DATE_FORMAT).date()
     except ValueError:
         logger.error('Date not in format YYYY-MM-DD: {0}'.format(args.date))
         exit(1)
