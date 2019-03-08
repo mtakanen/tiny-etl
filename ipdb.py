@@ -6,8 +6,8 @@ logger = logging.getLogger(__name__)
 DB_FILENAME = 'db/ip_cache.db'
 TABLE_NAME = 'ip_country'
 
-class IPCache:
-    '''Database cache for IP address to country_name mapping.'''
+class IPDb:
+    '''Database for IP address to country_name mapping.'''
 
     def __init__(self, db=DB_FILENAME):
         self.conn = self.connect_to_db(db)
@@ -40,14 +40,8 @@ class IPCache:
         c.execute(sql)
 
     def connect_to_db(self, db_filename):
-        """ create a database connection to the SQLite database
-            specified by the db_file
-        :param db_file: database file
-        :return: Connection object or None
-        """
         try:
             conn = sqlite3.connect(db_filename)
             return conn
         except sqlite3.Error as err:
-            logger.error('Connect to db {0} failed: {1}'.format(db_filename, err))
-        return None
+            logger.warning('Connect to db {0} failed: {1}'.format(db_filename, err))

@@ -10,10 +10,6 @@ TEST_DB = 'test/test.db'
 class TestLoad(unittest.TestCase):
 
     @classmethod
-    def setUpClass(cls):
-        cls.conn = sqlite3.connect(TEST_DB)
-
-    @classmethod
     def tearDown(cls):
         try:
             os.remove(TEST_DB)

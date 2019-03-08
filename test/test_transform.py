@@ -6,7 +6,7 @@ import logging
 
 import transform
 from transform import Transform
-from ip_cache import IPCache
+from ipdb import IPDb
 
 TEST_DB = 'test/test_ip.db'
 
@@ -122,14 +122,13 @@ class TestTransformIPToCountry(unittest.TestCase):
             pass
 
     def test_ip_to_country_cache(self):
-        test_cache_filename = TEST_DB
-        test_cache = IPCache(test_cache_filename)
-        test_cache.add('111.11.1.0', 'Utopia') 
-        country = transform.ip_to_country_cache('111.11.1.0', cache=test_cache)
+        db = IPDb(TEST_DB)
+        db.add('111.11.1.0', 'Utopia') 
+
+        country = transform.ip_to_country_cache('111.11.1.0', cache=db)
         assert country == 'Utopia'
 
     def test_ip_to_country_not_cached(self):
-        test_cache_filename = 'test/test_ip.db'
-        test_cache = IPCache(test_cache_filename)
-        country = transform.ip_to_country_cache('188.238.114.229', cache=test_cache)
+        db = IPDb(TEST_DB)
+        country = transform.ip_to_country_cache('188.238.114.229', cache=db)
         assert country == 'Finland'

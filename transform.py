@@ -3,7 +3,7 @@ import json
 from datetime import datetime
 import logging
 
-from ip_cache import IPCache
+from ipdb import IPDb
 
 EXTRACT_DATE_FORMAT = '%Y-%m-%d'
 HB_DOB_FORMAT = '%m/%d/%Y'
@@ -15,7 +15,7 @@ DROP_FIELDS_WWC = ['name', 'location', 'email', 'login', 'registered', 'phone',
                    'cell', 'picture', 'dob', 'nat', 'id']
 
 logger = logging.getLogger(__name__)
-ip_cache = IPCache()
+ip_cache = IPDb()
 
 class Transform:
     '''Transforms data sources. Supports transformations for user account data 
