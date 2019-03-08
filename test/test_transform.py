@@ -19,7 +19,7 @@ class TestTransform(unittest.TestCase):
                               ('email', 'mrussell0@soup.io'), ('gender', 'Female'), 
                               ('ip_address', '141.48.134.32'), ('dob', '5/26/1976')])
         expected = OrderedDict([('gender', 'female'), ('accountid', 'mrussell0@soup.io'), ('country', 'Germany'), 
-                                ('age', 42), ('extract_date', '2019-03-01'), ('load_date', '2019-03-07')])
+                                ('age', 42), ('game', 'hb'), ('extract_date', '2019-03-01'), ('load_date', '2019-03-07')])
 
         extract_date = datetime.strptime('2019-03-01', transform.EXTRACT_DATE_FORMAT).date()
         load_date = datetime.strptime('2019-03-07', transform.EXTRACT_DATE_FORMAT).date()
@@ -42,7 +42,7 @@ class TestTransform(unittest.TestCase):
                   'thumbnail': 'https://randomuser.me/api/portraits/thumb/women/66.jpg'}, 
                   'nat': 'FR'}
         expected = {'gender': 'female', 'accountid': 'blackdog395', 'country': 'France', 'age': 73, 
-                    'extract_date': '2019-03-01', 'load_date': '2019-03-07'}
+                    'game': 'wwc', 'extract_date': '2019-03-01', 'load_date': '2019-03-07'}
 
         extract_date = datetime.strptime('2019-03-01', transform.EXTRACT_DATE_FORMAT).date()
         load_date = datetime.strptime('2019-03-07', transform.EXTRACT_DATE_FORMAT).date()
@@ -121,14 +121,14 @@ class TestTransformIPToCountry(unittest.TestCase):
         except FileNotFoundError:
             pass
 
-    def test_ip_to_country_cache(self):
+    def test_ip_to_country(self):
         db = IPDb(TEST_DB)
-        db.add('111.11.1.0', 'Utopia') 
+        db.add('???.???.???.?', 'Utopia') 
 
-        country = transform.ip_to_country_cache('111.11.1.0', cache=db)
+        country = transform.ip_to_country('???.???.???.?', cache=db)
         assert country == 'Utopia'
 
     def test_ip_to_country_not_cached(self):
         db = IPDb(TEST_DB)
-        country = transform.ip_to_country_cache('188.238.114.229', cache=db)
+        country = transform.ip_to_country('188.238.114.229', cache=db)
         assert country == 'Finland'

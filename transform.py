@@ -32,9 +32,10 @@ class Transform:
            except email that can be used as unique key.
         '''
         record['accountid'] = record['email']
-        record['country'] = ip_to_country_cache(record['ip_address'])
+        record['country'] = ip_to_country(record['ip_address'])
         record['age'] = dob_to_age(record['dob'], HB_DOB_FORMAT, extract_date)
         record['gender'] = record['gender'].lower()
+        record['game'] = 'hb'
         add_date_fields(record, extract_date, load_date)
         drop_redundant_fields(record, DROP_FIELDS_HB)
         return record
@@ -48,6 +49,7 @@ class Transform:
         record['country'] = nat_to_country(record['nat']) 
         record['age'] = dob_to_age(record['dob'], WWC_DOB_FORMAT, extract_date)
         record['gender'] = record['gender'].lower()
+        record['game'] = 'wwc'
         add_date_fields(record, extract_date, load_date)
         drop_redundant_fields(record, DROP_FIELDS_WWC)
         return record 
@@ -63,7 +65,7 @@ def drop_redundant_fields(record, redundant_fields):
 def date_to_srt(date):
     return date.strftime(EXTRACT_DATE_FORMAT)
 
-def ip_to_country_cache(ip_address, cache=ip_cache):
+def ip_to_country(ip_address, cache=ip_cache):
     country = cache.get(ip_address)
     if country is None:
         country = ip_to_country_service(ip_address)
