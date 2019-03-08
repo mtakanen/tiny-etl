@@ -1,6 +1,6 @@
 import sqlite3
 
-DB_FILENAME = 'db/game_etl.db'
+DB_FILENAME = 'db/tiny_etl.db'
 
 def game_gender_ratio():
     print('Gender ratio in each game:')
@@ -18,7 +18,6 @@ def game_gender_ratio():
             print('{0} female: {1}, male: {2}'.format(r['game'], 
                                                       r['female_ratio'], 
                                                       r['male_ratio']))
-
 
 def country_age_span():
     print('\nThe youngest and oldest player per country:')

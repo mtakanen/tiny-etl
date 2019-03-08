@@ -33,14 +33,7 @@ class Extract:
 
 
 def read_csv(filename, limit=0):
-    '''Reads csv from file. Assumes that file exists
 
-    Args:
-        filename
-        limit 
-    Returns: 
-        generator of OrderedDict
-    '''
     with open(filename) as fp:
         cnt = 0
         reader = csv.DictReader(fp)
@@ -51,14 +44,6 @@ def read_csv(filename, limit=0):
                 break
 
 def read_json(filename, limit=0):
-    '''Reads lines of json objects from file. Assumes that file exists
-
-    Args:
-        filename
-        limit 
-    Returns: 
-        generator of OrderedDict
-    '''
 
     with open(filename) as fp:
         cnt = 1

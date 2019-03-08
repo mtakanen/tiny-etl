@@ -22,7 +22,6 @@ def main(args):
 def etl(game, extract_date, data_dir=DATA_DIR, db=load.DB_FILENAME):
     logger.info('Start ETL for game {0}'.format(game))
     load_date = datetime.today()
-
     data_dir = os.path.join(data_dir, game)
     
     extract_data = Extract.extract(data_dir, extract_date)
@@ -34,14 +33,15 @@ def etl(game, extract_date, data_dir=DATA_DIR, db=load.DB_FILENAME):
     Load.load(transform_data, game, db=db)
 
 def parse_args(args):
-    parser = argparse.ArgumentParser(description='Game account data ETL')
+    parser = argparse.ArgumentParser(description='Tiny ETL')
     parser.add_argument('game', help='Name of the game')
     parser.add_argument('date', help='Data extract date in format YYYY-MM-DD')
     args = parser.parse_args(args)
 
     game = args.game
     if game not in SUPPORTED_GAMES:
-        logger.error('ETL for {0} is not supported. Try one of {1}'.format(game, SUPPORTED_GAMES))
+        logger.error('ETL for {0} is not supported. Try one of {1}'.format(game, 
+                                                                    SUPPORTED_GAMES))
         exit(1)
     try:
         extract_date = datetime.strptime(args.date, transform.EXTRACT_DATE_FORMAT).date()

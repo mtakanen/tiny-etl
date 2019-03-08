@@ -2,15 +2,15 @@ import sqlite3
 
 import logging
 
-DB_FILENAME = 'db/game_etl.db'
+DB_FILENAME = 'db/tiny_etl.db'
 TABLE_NAME = 'accounts'
 
 logger = logging.getLogger(__name__)
 
 class Load():
     '''Loads accounts to database. Stores hb and wwc account data into same table.
-    If colliding accountid is deteceted old record is replaced (i.e. no support for 
-    historical versioning of data).
+    If colliding accountid is deteceted old record is replaced (i.e. db does not 
+    support historical versioning of data).
     '''
     @staticmethod
     def load(data, game, db=DB_FILENAME):
