@@ -8,8 +8,9 @@ logger = logging.getLogger(__name__)
 class Extract:
     
     @staticmethod
-    def extract(game, extract_date):
-        data_dir = os.path.join('data', game, date_to_dir(extract_date))
+    def extract(game, extract_date, data_dir='data'):
+        data_dir = os.path.join(data_dir, game, date_to_dir(extract_date))
+        print(data_dir)
         try:
             files = os.listdir(data_dir)
             if len(files) == 0:
@@ -24,13 +25,21 @@ class Extract:
 
         logger.info('Read from {0}'.format(filepath))
         if filename.endswith('.csv'):
-            data = read_csv(filepath, limit=0)
+            generator = read_csv(filepath, limit=0)
         elif filename.endswith('.json'):
-            data = read_json(filepath, limit=0)
-        return data
+            generator = read_json(filepath, limit=0)
+        return generator
 
 
 def read_csv(filename, limit=0):
+    '''Reads csv from file. Assumes that file exists
+
+    Args:
+        filename
+        limit 
+    Returns: 
+        generator of OrderedDict
+    '''
     with open(filename) as fp:
         cnt = 0
         reader = csv.DictReader(fp)
@@ -41,6 +50,8 @@ def read_csv(filename, limit=0):
                 break
 
 def read_json(filename, limit=0):
+    '''Reads lines of json objects from `filename`. Assumes that file exists'''
+
     with open(filename) as fp:
         cnt = 1
         line = fp.readline()
@@ -58,6 +69,4 @@ def date_to_dir(extract_date):
 
 def validate():
     #TODO validate extracted data
-    required_fields = ['id', 'first_name', 'last_name', 'email', 'gender', 'ip_address', 'dob']
-    #print(self.data[0].keys())
-    #dob_format not in ['%Y-%m-%d', '%Y-%m-%d %H:%M:%S']:
+    pass
