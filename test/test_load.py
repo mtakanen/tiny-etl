@@ -51,7 +51,7 @@ class TestLoad(unittest.TestCase):
                     ('bar', '2', 'male', 38, 'United States', '2018-06-28', '2019-03-07')]
         with sqlite3.connect(TEST_DB) as conn:
             c = conn.cursor()
-            sql = '''SELECT * FROM accounts'''
+            sql = '''SELECT * FROM test_accounts'''
             c.execute(sql)
             result = c.fetchall()
             self.assertEqual(result, expected)
@@ -74,7 +74,7 @@ class TestLoad(unittest.TestCase):
                     ('bar' ,'2', 'FEMALE', 38, 'United States', '2018-06-28', '2019-03-07')]
         with sqlite3.connect(TEST_DB) as conn:
             c = conn.cursor()
-            sql = '''SELECT * FROM accounts'''
+            sql = '''SELECT * FROM test_accounts'''
             c.execute(sql)
             result = c.fetchall()
             self.assertEqual(result, expected)

@@ -23,14 +23,14 @@ def etl(game, extract_date, data_dir=DATA_DIR, db=load.DB_FILENAME):
     logger.info('Start ETL for game {0}'.format(game))
     load_date = datetime.today()
     data_dir = os.path.join(data_dir, game)
-    
-    extract_data = Extract.extract(data_dir, extract_date)
     if game == 'hb':
         trans_fun = Transform.hb_transform
     elif game == 'wwc':
         trans_fun = Transform.wwc_transform
-    transform_data = Transform.transform(extract_data, trans_fun, extract_date, load_date)
-    Load.load(transform_data, game, db=db)
+
+    data = Extract.extract(data_dir, extract_date)
+    data = Transform.transform(data, trans_fun, extract_date, load_date)
+    Load.load(data, game, db=db)
 
 def parse_args(args):
     parser = argparse.ArgumentParser(description='Tiny ETL')
