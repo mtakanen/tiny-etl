@@ -3,7 +3,7 @@ import sqlite3
 import logging
 
 DB_FILENAME = 'db/tiny_etl.db'
-TABLE_NAME = 'accounts'
+TABLE_SUFFIX = 'accounts'
 
 logger = logging.getLogger(__name__)
 
@@ -14,14 +14,15 @@ class Load():
     '''
     @staticmethod
     def load(data, game, db=DB_FILENAME):
-        logger.info('Load data to {0}'.format(db))
-        
+        table_name = '{0}_{1}'.format(game, TABLE_SUFFIX)
+        logger.info('Load data to {0} ({1})'.format(table_name, db))
+
         with connect_to_db(db) as conn: 
-            create_table(conn, TABLE_NAME)
+            create_table(conn, table_name)
             c = conn.cursor()
             sql = '''INSERT OR REPLACE INTO {0} 
                     VALUES (:game, :accountid, :gender, :age, 
-                    :country, :extract_date, :load_date)'''.format(TABLE_NAME)
+                    :country, :extract_date, :load_date)'''.format(table_name)
             c.executemany(sql, data)
             conn.commit()
 

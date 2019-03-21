@@ -46,7 +46,7 @@ class TestEtl(unittest.TestCase):
 
         conn = sqlite3.connect(TEST_DB)
         c = conn.cursor()   
-        c.execute('SELECT count(*) FROM accounts')
+        c.execute('SELECT count(*) FROM hb_accounts')
         assert c.fetchone()[0] == 10
 
     @classmethod
@@ -57,6 +57,6 @@ class TestEtl(unittest.TestCase):
 
         conn = sqlite3.connect(TEST_DB)
         c = conn.cursor()   
-        c.execute('SELECT count(*) FROM accounts')
+        c.execute('SELECT count(*) FROM wwc_accounts')
         assert c.fetchone()[0] == 5
 

@@ -32,19 +32,29 @@ def country_age_span():
         for r in c.fetchall():
             print('{0}: {1} {2}'.format(r['country'],r['min_age'],r['max_age']))
 
-def table_exists():
+def data_exists():
     with sqlite3.connect(DB_FILENAME) as conn:
         # check that table exists
         c = conn.cursor()
         sql = '''SELECT count(*) FROM sqlite_master 
-                WHERE type='table' AND name=?'''
+                WHERE type='view' AND name=?'''
         c.execute(sql, ('accounts',))
         result = c.fetchone()
         return result[0] > 0
 
+def create_view():
+    with sqlite3.connect(DB_FILENAME) as conn:
+        sql = '''create view if not exists accounts 
+                 as 
+                 select * from hb_accounts 
+                 union 
+                 select * from wwc_accounts'''
+        conn.execute(sql)
+
 if __name__ == '__main__':
-    if table_exists():
+    create_view()
+    if data_exists():
         game_gender_ratio()
         country_age_span()
     else:
-        print('Table is missing. Run ETL for both games first!')
+        print('Data is missing. Run etl.py for both games first!')
