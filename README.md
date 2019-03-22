@@ -1,17 +1,15 @@
 # Tiny ETL
 
 
-Tiny ETL is a python script that extracts source data, transforms it to unified form and loads it to analytical database. Source data sets are located in: data/wwc/2018/06/28/*.json and data/hb/2018/06/28/*.csv 
+Tiny ETL is a python program that extracts data from local files, transforms it to unified form and loads it to datawarehouse (local sqlite3 database). 
 
-New data for game wwc or hb can be added to the directory tree based on extract dates.
+New data for product wwc or hb can be added to directory `data` in a directory tree based on product name and extract dates. Refer e.g. `data/wwc/2018/06/28/hb.json` and `data/hb/2018/06/28/wwc.csv` for formats. Extract supports csv and (lines of) json. 
 
-In addition, web service https://ipapi.co is used for IP address to country name transformation. Used free version of service limits the number of requests to 1000/day. Tiny ETL stores fetched IP addresses to local sqlite database (db/ip_cache.db) that is queried before requesting the web service. Dabase contains mapping for provided source 
-data. In general, running the script (and unit tests) requires Internet 
-connection.
+In transform phase, analytically interesting fields are selected and transformed to unified forms. IP address to country name transformation for source `hb` uses web service https://ipapi.co. As free version of the service limits the number of requests to 1000/day fetched IP address-country mappings are stored to a local sqlite database `db/ip_cache.db` that is queried before requesting the web service. Cache contains mapping for provided example data. 
 
-For nationality to country name transformation, a dataset available at https://datahub.io/core/country-list is used. Data set is stored locally in res/iso2country.json and loaded in memory when the script is run.
+Nationality to country name transformation uses a dataset available at https://datahub.io/core/country-list. Data set is stored locally in `res/iso2country.json` and loaded in memory when the script is run.
 
-To scale the ETL for larger volume and velocity, one would need to source the data required in IP address to country transformation and store it to local database and apply an efficient indexing and caching of IP address ranges. Computation could be parallized with e.g. Apache Spark that provides abstraction layer on top of physical computation instances.
+To scale the ETL for larger volume and velocity, one would need to source the data required in IP address to country transformation and store it to local database and apply an efficient indexing and caching of IP address ranges.
 
 # Instuctions
 
