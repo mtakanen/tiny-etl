@@ -11,30 +11,28 @@ Nationality to country name transformation uses a dataset available at https://d
 
 To scale the ETL for larger volume and velocity, one would need to source the data required in IP address to country transformation and store it to local database and apply an efficient indexing and caching of IP address ranges.
 
-# Instuctions
+# Instructions
 
 Requirements:
 - Python 3 (3.6.5 or newer is recommended)
 - Internet connection
 
-To run the ETL for both data sources:
+Clone the repository and run etl for both sample data sources:
 ```
 cd tiny-etl
 python etl.py hb 2018-06-28
 python etl.py wwc 2018-06-28
 ```
 
-When etl.py has been run for both data sources, analytical test queries 
-can be run: 
+When etl.py has been run for data sources, analytical test queries 
+can be run with: 
 ```
 python test/test_queries.py
 ```
 
 # Unit tests
 
-Unit tests are written with the standard unittest module.
-
-In directory tiny-etl, command:
+Unit tests are written with unittest framework. In directory tiny-etl, command:
 ```
 python -m unittest discover -v
 ```
